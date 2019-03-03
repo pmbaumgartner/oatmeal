@@ -9,8 +9,8 @@ Given a binary prediction problem with training dataset like:
 ```bash
 $ head train.csv
 texts, labels
-"the sandwiches are good", 1
-"I found the food disappointing", 0
+"the sandwiches are good",1
+"I found the food disappointing",0
 ...
 ```
 
@@ -33,15 +33,15 @@ by default, it'll save your model to a timestamped directory with the model type
 
 ## Model Types
 
-You can currently train binary, multiclass, and multilabel. 
+You can train binary, multiclass, and multilabel. 
 
 **Binary**
 
 ```
 $ head binary-output.csv
-id, label
-0, 0.29349324
-1, 0.8934850
+id,label
+0,0.2934
+1,0.8934
 ```
 
 **Multiclass & Multilabel**
@@ -50,7 +50,7 @@ id, label
 
 ```
 $ head multilabel-output.csv
-id, label0, label1, ..., labelk
-0, 0.3943, 0.8984, ..., 0.3481
-1, 0.8293, 0.1883, ..., 0.934
+id,label0,label1,...,labelk
+0,0.3943,0.8984,...,0.3481
+1,0.8293,0.1883,...,0.9342
 ```
