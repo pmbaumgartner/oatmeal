@@ -1,6 +1,6 @@
 # Oatmeal
 
-![BERT eating Oatmeal](https:/i.postimg.cc/0NgG7BZ9/image.png)
+![BERT eating Oatmeal](https://i.postimg.cc/0NgG7BZ9/image.png)
 
 I needed something to create single sentence and document classifiers using BERT.
 
