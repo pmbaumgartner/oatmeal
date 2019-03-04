@@ -151,42 +151,57 @@ class TrainStage(object):
         )
 
 
-def predict(
-    input_data: str, model_path: str, model_name: str, batch_size=PRED_BATCH_SIZE
-):
+class PredictStage(object):
+    def __init__(
+        self,
+        input_data: str,
+        model_path: str,
+        model_name: str,
+        batch_size=PRED_BATCH_SIZE,
+    ):
+        self.input_data = input_data
+        self.model_path = model_path
+        self.model_name = model_name
+        self.batch_size = batch_size
 
-    texts, df = load_evaluation_data(input_data)
-    training_parameters = load_training_config(
-        str(model_path + f"/{model_name}-training-parameters.json")
-    )
-    problem_type = training_parameters["problem_type"]
-    num_labels = training_parameters["num_labels"]
-    max_seq_len = training_parameters["max_seq_len"]
-    if problem_type in ("binary", "multiclass"):
-        model = load_model_classification(model_path, model_name, num_labels=num_labels)
-        prediction_loader = create_prediction_dataloader(texts, max_seq_len, batch_size)
-        pred_softmax = run_prediction_softmax(model, prediction_loader)
-        if problem_type == "binary":
-            predictions_df = build_binary_predictions_df(df, pred_softmax)
-            predictions_df.to_csv(model_path + "/preds.csv")
-        elif problem_type == "multiclass":
-            predictions_df = build_multi_predictions_df(df, pred_softmax)
-            predictions_df.to_csv(model_path + "/preds.csv")
-
-    elif problem_type == "multilabel":
-        model = load_model_multilabel(
-            str(model_path), model_name, num_labels=num_labels
+        texts, df = load_evaluation_data(self.input_data)
+        training_parameters = load_training_config(
+            str(self.model_path + f"/{self.model_name}-training-parameters.json")
         )
-        prediction_loader = create_prediction_dataloader(texts, max_seq_len, batch_size)
-        pred_sigmoid = run_prediction_sigmoid(model, prediction_loader)
-        predictions_df = build_multi_predictions_df(df, pred_sigmoid)
-        predictions_df.to_csv(model_path + "/preds.csv")
+        problem_type = training_parameters["problem_type"]
+        num_labels = training_parameters["num_labels"]
+        max_seq_len = training_parameters["max_seq_len"]
+        if problem_type in ("binary", "multiclass"):
+            model = load_model_classification(
+                self.model_path, self.model_name, num_labels=num_labels
+            )
+            prediction_loader = create_prediction_dataloader(
+                texts, max_seq_len, self.batch_size
+            )
+            pred_softmax = run_prediction_softmax(model, prediction_loader)
+            if problem_type == "binary":
+                predictions_df = build_binary_predictions_df(df, pred_softmax)
+                predictions_df.to_csv(self.model_path + "/preds.csv")
+            elif problem_type == "multiclass":
+                predictions_df = build_multi_predictions_df(df, pred_softmax)
+                predictions_df.to_csv(self.model_path + "/preds.csv")
+
+        elif problem_type == "multilabel":
+            model = load_model_multilabel(
+                str(self.model_path), self.model_name, num_labels=num_labels
+            )
+            prediction_loader = create_prediction_dataloader(
+                texts, max_seq_len, self.batch_size
+            )
+            pred_sigmoid = run_prediction_sigmoid(model, prediction_loader)
+            predictions_df = build_multi_predictions_df(df, pred_sigmoid)
+            predictions_df.to_csv(self.model_path + "/preds.csv")
 
 
 class Pipeline(object):
     def __init__(self, input_data, model_path=None, model_name=None):
         self.train = TrainStage(input_data)
-        self.predict = predict(input_data, model_path, model_name)
+        self.predict = PredictStage(input_data, model_path, model_name)
 
 
 if __name__ == "__main__":
