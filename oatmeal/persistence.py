@@ -44,7 +44,7 @@ def load_model_classification(
     config = BertConfig(str(model_path / f"{model_name}-config.json"))
     model = BertForSequenceClassification(config, num_labels=num_labels)
     model.load_state_dict(torch.load(str(model_path / f"{model_name}-model.pt")))
-    return (model,)
+    return model
 
 
 def load_model_multilabel(

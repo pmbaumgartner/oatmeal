@@ -123,3 +123,8 @@ dmypy.json
 # Data
 *.tsv
 *.csv
+
+# oatmeal model
+*.pt 
+*-config.json
+*-training-parameters.json

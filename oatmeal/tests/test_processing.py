@@ -53,4 +53,3 @@ def test_multilabels_to_tensor():
     result = multilabels_to_tensor(labels)
 
     assert torch.equal(result, torch.tensor([[0, 0, 1], [0, 1, 1], [1, 1, 1]]))
-

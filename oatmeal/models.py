@@ -9,7 +9,6 @@ from pytorch_pretrained_bert.modeling import (
     BertPreTrainedModel,
 )
 from pytorch_pretrained_bert.optimization import BertAdam
-from pytorch_pretrained_bert.tokenization import BertTokenizer
 from torch.nn import BCEWithLogitsLoss
 from torch.utils.data import DataLoader
 from tqdm import tqdm, trange
