@@ -12,7 +12,7 @@ from models import (
     run_prediction_sigmoid,
     run_prediction_softmax,
 )
-from persistence import (
+from persistance import (
     create_training_parameters,
     load_classification_data,
     load_evaluation_data,
@@ -110,7 +110,7 @@ class TrainStage(object):
             self.model_name = "multiclass"
 
         training_parameters = create_training_parameters(
-            num_labels=2,
+            num_labels=num_labels,
             problem_type="multiclass",
             max_seq_len=self.max_seq_len,
             epochs=self.epochs,
@@ -140,8 +140,8 @@ class TrainStage(object):
             self.model_name = "multilabel"
 
         training_parameters = create_training_parameters(
-            num_labels=2,
-            problem_type="binary",
+            num_labels=num_labels,
+            problem_type="multilabel",
             max_seq_len=self.max_seq_len,
             epochs=self.epochs,
         )
@@ -199,9 +199,12 @@ class PredictStage(object):
 
 
 class Pipeline(object):
-    def __init__(self, input_data, model_path=None, model_name=None):
+    def __init__(self, input_data):
+        self.input_data = input_data
         self.train = TrainStage(input_data)
-        self.predict = PredictStage(input_data, model_path, model_name)
+
+    def predict(self, model_path=".", model_name=""):
+        self.predict = PredictStage(self.input_data, model_path, model_name)
 
 
 if __name__ == "__main__":

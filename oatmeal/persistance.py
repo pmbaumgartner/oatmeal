@@ -9,7 +9,7 @@ from pandas import DataFrame
 import torch
 
 from pytorch_pretrained_bert.modeling import BertForSequenceClassification, BertConfig
-from oatmeal.models import BertForMultiLabelSequenceClassification
+from models import BertForMultiLabelSequenceClassification
 
 bert_model_types = Union[
     BertForSequenceClassification, BertForMultiLabelSequenceClassification
@@ -38,7 +38,7 @@ def save_model(
 
 
 def load_model_classification(
-    model_path: str, model_name: str, num_labels: int = 2
+    model_path: Path, model_name: str, num_labels: int = 2
 ) -> BertForSequenceClassification:
     model_path = Path(model_path)
     config = BertConfig(str(model_path / f"{model_name}-config.json"))
@@ -48,7 +48,7 @@ def load_model_classification(
 
 
 def load_model_multilabel(
-    model_path: str, model_name: str, num_labels: int = 2
+    model_path: Path, model_name: str, num_labels: int = 2
 ) -> BertForMultiLabelSequenceClassification:
     model_path = Path(model_path)
     config = BertConfig(str(model_path / f"{model_name}-config.json"))
@@ -80,7 +80,9 @@ def load_evaluation_data(input_csv: str) -> Tuple[array, DataFrame]:
     return texts, df
 
 
-def create_training_parameters(num_labels, problem_type, max_seq_len, epochs):
+def create_training_parameters(
+    num_labels: int, problem_type: str, max_seq_len: int, epochs: int
+) -> Dict:
     return dict(
         num_labels=num_labels,
         problem_type=problem_type,
@@ -89,7 +91,7 @@ def create_training_parameters(num_labels, problem_type, max_seq_len, epochs):
     )
 
 
-def load_training_config(json_path: str):
+def load_training_config(json_path: str) -> Dict:
     with open(json_path, "r") as f:
         training_config = json.load(f)
     return training_config
