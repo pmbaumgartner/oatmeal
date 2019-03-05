@@ -10,3 +10,5 @@
 6. ~~Save other model data (num labels, n epochs, max seq len?, multiclass/multilabel column index dict )~~
 7. ~~Rename loading to IO? Refactor where functions are in modules.~~
 8. Add in predictions dataset name option
+9. Reincorporate APEX
+10. Return label mapping and allow for custom labels
