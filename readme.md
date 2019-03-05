@@ -8,7 +8,7 @@ Given a binary prediction problem with training dataset like:
 
 ```bash
 $ head train.csv
-texts, labels
+texts,labels
 "the sandwiches are good",1
 "I found the food disappointing",0
 ...
@@ -19,17 +19,20 @@ Train a model with:
 python oatmeal.py train binary --input-data="train.csv"
 ```
 
-some other helpful commands:
+some other helpful arguments:
 ```
-oatmeal.py --input-data INPUT_DATA [--model-path MODEL_PATH] [--model-name MODEL_NAME]
+[--model-path MODEL_PATH] [--model-name MODEL_NAME]
 ```
 
-by default, it'll save your model to a timestamped directory with the model type.
+by default, it'll save your model to a timestamped directory with the classification type as the model name.
 
 ## Predictions
 
-*TODO*
+Once you've trained your model, to predict:
 
+```
+python oatmeal.py predict --input-data="test.csv" --model-path="your_model_path" --model-name="your_model_name"
+```
 
 ## Model Types
 
