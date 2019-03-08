@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, List
 
 import pandas as pd
 from numpy import array
@@ -59,18 +59,21 @@ def load_model_multilabel(
     return model
 
 
-def load_classification_data(input_csv: str) -> Tuple[array, array]:
+def load_classification_data(
+    input_csv: str, text_column: str, label_column: str
+) -> Tuple[array, array]:
     df = pd.read_csv(input_csv)
-    texts = df["texts"].values
-    labels = df["labels"].values
+    texts = df[text_column].values
+    labels = df[label_column].values
     return texts, labels
 
 
-def load_multilabel_data(input_csv: str) -> Tuple[array, array]:
+def load_multilabel_data(
+    input_csv: str, text_column: str, label_columns: List
+) -> Tuple[array, array]:
     df = pd.read_csv(input_csv)
     texts = df["texts"].values
-    label_cols = [col for col in df.columns if col.startswith("label")]
-    labels = df[label_cols].values
+    labels = df[label_columns].values
     return texts, labels
 
 
