@@ -47,16 +47,6 @@ def tensorize_texts(
 
 
 def labels_to_tensor(labels: array) -> Tensor:
-    label_map = {label: i for i, label in enumerate(np.unique(labels))}
-    label_ids = [label_map[label] for label in labels]
-    all_label_ids = torch.tensor(label_ids, dtype=torch.long)
-    return all_label_ids
-
-
-def multilabels_to_tensor(labels: array) -> Tensor:
-    """This should be an array of boolean ints:
-    labels = [[0, 1, 0], [1, 0, 1]]
-    """
     all_label_ids = torch.tensor(labels, dtype=torch.long)
     return all_label_ids
 
@@ -99,17 +89,6 @@ def create_training_dataloader(
     return dataloader
 
 
-def create_training_dataloader_multilabel(
-    texts: array, labels: array, max_seq_len: int, batch_size: int
-) -> DataLoader:
-    all_input_ids, all_input_mask, all_segment_ids = tensorize_texts(texts, max_seq_len)
-    all_label_ids = multilabels_to_tensor(labels)
-    dataloader = build_train_dataloader(
-        all_input_ids, all_input_mask, all_segment_ids, all_label_ids, batch_size
-    )
-    return dataloader
-
-
 def create_prediction_dataloader(
     texts: array, max_seq_len: int, batch_size: int
 ) -> DataLoader:
@@ -127,10 +106,12 @@ def build_binary_predictions_df(input_df: DataFrame, predictions: array) -> Data
     return output_df
 
 
-def build_multi_predictions_df(input_df: DataFrame, predictions: array) -> DataFrame:
+def build_multi_predictions_df(
+    input_df: DataFrame, predictions: array, label_names: List[str]
+) -> DataFrame:
     n_labels = predictions.shape[1]
-    predictions_df = pd.DataFrame(
-        predictions, columns=[f"label{i}" for i in range(n_labels)]
-    )
+    if label_names == []:
+        label_names = [f"label{i}" for i in range(n_labels)]
+    predictions_df = pd.DataFrame(predictions, columns=label_names)
     output_df = pd.concat([input_df, predictions_df], axis=1)
     return output_df

@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union, List
+from typing import Dict, Optional, Tuple, Union, List, Any
 
 import pandas as pd
 from numpy import array
@@ -18,7 +18,7 @@ bert_model_types = Union[
 
 def save_model(
     model: bert_model_types,
-    training_parameters: Dict,
+    training_parameters: Dict[str, str],
     export_dir: Optional[str],
     model_name: str,
 ) -> None:
@@ -52,28 +52,31 @@ def load_model_multilabel(
 ) -> BertForMultiLabelSequenceClassification:
     model_path = Path(model_path)
     config = BertConfig(str(model_path / f"{model_name}-config.json"))
-    model = BertForMultiLabelSequenceClassification(  # type: ignore
-        config, num_labels=num_labels
-    )
+    model = BertForMultiLabelSequenceClassification(config, num_labels=num_labels)
     model.load_state_dict(torch.load(str(model_path / f"{model_name}-model.pt")))
     return model
 
 
 def load_classification_data(
     input_csv: str, text_column: str, label_column: str
-) -> Tuple[array, array]:
+) -> Tuple[array, array, Optional[Dict[str, int]]]:
     df = pd.read_csv(input_csv)
     texts = df[text_column].values
-    labels = df[label_column].values
-    return texts, labels
+    labelmap = None
+    if df[label_column].dtype == "O":
+        labelmap = {label: i for i, label in enumerate(df[label_column].unique())}
+        labels = df[label_column].map(labelmap).values
+    else:
+        labels = df[label_column].values
+    return texts, labels, labelmap
 
 
 def load_multilabel_data(
-    input_csv: str, text_column: str, label_columns: List
+    input_csv: str, text_column: str, label_names: List[str]
 ) -> Tuple[array, array]:
     df = pd.read_csv(input_csv)
     texts = df["texts"].values
-    labels = df[label_columns].values
+    labels = df[label_names].values
     return texts, labels
 
 
@@ -84,17 +87,22 @@ def load_evaluation_data(input_csv: str) -> Tuple[array, DataFrame]:
 
 
 def create_training_parameters(
-    num_labels: int, problem_type: str, max_seq_len: int, epochs: int
-) -> Dict:
+    num_labels: int,
+    problem_type: str,
+    max_seq_len: int,
+    epochs: int,
+    label_names: List[str],
+) -> Dict[str, Any]:
     return dict(
         num_labels=num_labels,
         problem_type=problem_type,
         epochs=epochs,
         max_seq_len=max_seq_len,
+        label_names=label_names,
     )
 
 
-def load_training_config(json_path: str) -> Dict:
+def load_training_config(json_path: str) -> Dict[str, Any]:
     with open(json_path, "r") as f:
         training_config = json.load(f)
     return training_config

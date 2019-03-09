@@ -11,4 +11,6 @@
 7. ~~Rename loading to IO? Refactor where functions are in modules.~~
 8. Add in predictions dataset name option
 9. Reincorporate APEX
-10. Return label mapping and allow for custom labels
+10. ~~Return label mapping and allow for custom labels~~
+11. Refactor to have only multiclass or multilabel, and take column names?
+    - ~~Multiclass: They can pass a DF with text labels, we'll enumerate and return them. OR they can pass a DF with pre-enumerated (integers) and then pass an argument with the labels they want.~~

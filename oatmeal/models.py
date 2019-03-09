@@ -2,11 +2,13 @@ from typing import Union
 
 import numpy as np
 import torch
+from torch import Tensor
 from numpy import array
 from pytorch_pretrained_bert.modeling import (
     BertForSequenceClassification,
     BertModel,
     BertPreTrainedModel,
+    BertConfig,
 )
 from pytorch_pretrained_bert.optimization import BertAdam
 from torch.nn import BCEWithLogitsLoss
@@ -21,7 +23,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class BertForMultiLabelSequenceClassification(BertPreTrainedModel):  # type: ignore
     """Make a good docstring!"""
 
-    def __init__(self, config, num_labels=2):  # type: ignore
+    def __init__(self, config: BertConfig, num_labels: int = 2):
         super(BertForMultiLabelSequenceClassification, self).__init__(config)
         self.num_labels = num_labels
         self.bert = BertModel(config)
@@ -29,9 +31,13 @@ class BertForMultiLabelSequenceClassification(BertPreTrainedModel):  # type: ign
         self.classifier = torch.nn.Linear(config.hidden_size, num_labels)
         self.apply(self.init_bert_weights)
 
-    def forward(  # type: ignore
-        self, input_ids, token_type_ids=None, attention_mask=None, labels=None
-    ):
+    def forward(
+        self,
+        input_ids: Tensor,
+        token_type_ids: Tensor = None,
+        attention_mask: Tensor = None,
+        labels: Tensor = None,
+    ) -> Tensor:
         _, pooled_output = self.bert(
             input_ids, token_type_ids, attention_mask, output_all_encoded_layers=False
         )
@@ -48,11 +54,11 @@ class BertForMultiLabelSequenceClassification(BertPreTrainedModel):  # type: ign
         else:
             return logits
 
-    def freeze_bert_encoder(self):  # type: ignore
+    def freeze_bert_encoder(self) -> None:
         for param in self.bert.parameters():
             param.requires_grad = False
 
-    def unfreeze_bert_encoder(self):  # type: ignore
+    def unfreeze_bert_encoder(self) -> None:
         for param in self.bert.parameters():
             param.requires_grad = True
 
