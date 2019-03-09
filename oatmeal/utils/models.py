@@ -63,16 +63,6 @@ class BertForMultiLabelSequenceClassification(BertPreTrainedModel):  # type: ign
             param.requires_grad = True
 
 
-def get_bert_binary_model() -> BertForSequenceClassification:
-    bert_model = BertForSequenceClassification.from_pretrained(
-        "bert-base-uncased", num_labels=2
-    )
-    if n_gpu > 1:
-        bert_model = torch.nn.DataParallel(bert_model)
-
-    return bert_model
-
-
 def get_bert_multiclass_model(num_labels: int) -> BertForSequenceClassification:
     bert_model = BertForSequenceClassification.from_pretrained(
         "bert-base-uncased", num_labels=num_labels

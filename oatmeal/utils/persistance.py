@@ -9,7 +9,7 @@ from pandas import DataFrame
 import torch
 
 from pytorch_pretrained_bert.modeling import BertForSequenceClassification, BertConfig
-from models import BertForMultiLabelSequenceClassification
+from .models import BertForMultiLabelSequenceClassification
 
 bert_model_types = Union[
     BertForSequenceClassification, BertForMultiLabelSequenceClassification
@@ -60,7 +60,9 @@ def load_model_multilabel(
 def load_classification_data(
     input_csv: str, text_column: str, label_column: str
 ) -> Tuple[array, array, Optional[Dict[str, int]]]:
-    df = pd.read_csv(input_csv)
+    df = pd.read_csv(input_csv, dtype={text_column: str}).dropna(
+        subset=[text_column, label_column]
+    )
     texts = df[text_column].values
     labelmap = None
     if df[label_column].dtype == "O":
@@ -74,8 +76,11 @@ def load_classification_data(
 def load_multilabel_data(
     input_csv: str, text_column: str, label_names: List[str]
 ) -> Tuple[array, array]:
-    df = pd.read_csv(input_csv)
-    texts = df["texts"].values
+    dtype = {text_column: str}
+    for label in label_names:
+        dtype[label] = int
+    df = pd.read_csv(input_csv, dtype=dtype)
+    texts = df[text_column].values
     labels = df[label_names].values
     return texts, labels
 

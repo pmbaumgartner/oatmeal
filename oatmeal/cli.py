@@ -2,8 +2,7 @@ import click
 
 import torch
 
-from models import (
-    get_bert_binary_model,  # remove
+from utils.models import (
     get_bert_multiclass_model,
     get_bert_multilabel_model,
     get_bert_opt,
@@ -11,7 +10,7 @@ from models import (
     run_prediction_sigmoid,
     run_prediction_softmax,
 )
-from persistance import (
+from utils.persistance import (
     create_training_parameters,
     load_classification_data,
     load_evaluation_data,
@@ -21,7 +20,7 @@ from persistance import (
     load_training_config,
     save_model,
 )
-from processing import (
+from utils.processing import (
     build_binary_predictions_df,
     build_multi_predictions_df,
     create_prediction_dataloader,
@@ -42,7 +41,7 @@ if device == "cuda":
 
 
 @click.group()
-def cli():
+def cli(obj={}):
     pass
 
 
