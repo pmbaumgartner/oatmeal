@@ -19,7 +19,3 @@ def binary_dataset():
         df.to_csv(tf.name)
         yield tf.name
 
-
-def test_binary_model(binary_dataset):
-    pipeline = Pipeline(input_data=binary_dataset).train.binary()
-
