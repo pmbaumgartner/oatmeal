@@ -9,11 +9,12 @@ from pytorch_pretrained_bert.tokenization import BertTokenizer
 from torch import Tensor
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, TensorDataset
 
+tokenizer = BertTokenizer.from_pretrained("bert-base-uncased", do_lower_case=True)
+
 
 def text_to_token_ids(
     text: str, max_seq_len: int
 ) -> Tuple[List[int], List[int], List[int]]:
-    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased", do_lower_case=True)
     initial_tokens = tokenizer.tokenize(text)
     if len(initial_tokens) > max_seq_len - 2:
         initial_tokens = initial_tokens[: (max_seq_len - 2)]
