@@ -75,14 +75,14 @@ def load_multilabel_data(
     input_csv: str, text_column: str, label_names: List[str]
 ) -> Tuple[array, array]:
     df = pd.read_csv(input_csv)
-    texts = df["texts"].values
+    texts = df[text_column].values
     labels = df[label_names].values
     return texts, labels
 
 
-def load_evaluation_data(input_csv: str) -> Tuple[array, DataFrame]:
+def load_evaluation_data(input_csv: str, text_column) -> Tuple[array, DataFrame]:
     df = pd.read_csv(input_csv)
-    texts = df["texts"].values
+    texts = df[text_column].values
     return texts, df
 
 

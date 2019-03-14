@@ -26,19 +26,24 @@ from processing import (
     build_multi_predictions_df,
     create_prediction_dataloader,
     create_training_dataloader,
-    create_training_dataloader,
 )
 
-TRAIN_BATCH_SIZE = 16
 TRAIN_EPOCHS = 3
-MAX_SEQ_LEN = 64
 PRED_BATCH_SIZE = 64
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-if device == "cuda":
-    TRAIN_BATCH_SIZE = 32
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
+
+if device == "cpu":
+    TRAIN_BATCH_SIZE = 16
+    MAX_SEQ_LEN = 64
+else:
+    TRAIN_BATCH_SIZE = 8
     MAX_SEQ_LEN = 128
+
+
+print(TRAIN_BATCH_SIZE, MAX_SEQ_LEN)
 
 
 @click.group()
@@ -201,8 +206,9 @@ def multilabel(ctx, text_column, label_names):
 )
 @click.option("-n", "--model-name", type=str, nargs=1)
 @click.option("-b", "--batch-size", type=int, default=TRAIN_BATCH_SIZE, nargs=1)
-def predict(input_data, model_path, model_name, batch_size):
-    texts, df = load_evaluation_data(input_data)
+@click.option("-x", "--text-column", required=True, type=str)
+def predict(input_data, model_path, model_name, batch_size, text_column):
+    texts, df = load_evaluation_data(input_data, text_column)
     training_parameters = load_training_config(
         str(model_path + f"/{model_name}-training-parameters.json")
     )

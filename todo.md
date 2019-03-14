@@ -14,3 +14,5 @@
 10. ~~Return label mapping and allow for custom labels~~
 11. Refactor to have only multiclass or multilabel, and take column names?
     - ~~Multiclass: They can pass a DF with text labels, we'll enumerate and return them. OR they can pass a DF with pre-enumerated (integers) and then pass an argument with the labels they want.~~
+12. Why does data loading take so long (even for small datasets)?
+13. Error in multilabel train with up to line 1000? tokenizer not instantiated?
