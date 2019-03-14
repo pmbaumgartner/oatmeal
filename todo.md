@@ -1,16 +1,20 @@
 # TODO
 
-1. Check if post-tokenization inputs are longer than max_seq_len
-2. ~~Convert lists to numpy arrays (texts and labels)~~
-3. Save paths are weird... gotta be a better way to pass a dir and model name? Look at what other libraries do.
-    - return save paths from funcs?
-    - Consistently use `pathlib`.
-4. Tune with ray-tune? Not a lot of vars, maybe epochs? 
-5. Evaluation in training loop.
-6. ~~Save other model data (num labels, n epochs, max seq len?, multiclass/multilabel column index dict )~~
-7. ~~Rename loading to IO? Refactor where functions are in modules.~~
-8. Add in predictions dataset name option
-9. Reincorporate APEX
-10. ~~Return label mapping and allow for custom labels~~
-11. Refactor to have only multiclass or multilabel, and take column names?
-    - ~~Multiclass: They can pass a DF with text labels, we'll enumerate and return them. OR they can pass a DF with pre-enumerated (integers) and then pass an argument with the labels they want.~~
+1. Check if post-tokenization inputs are longer than max_seq_len24. Tune with ray-tune? batch size, epochs, max seq len
+    - need to be careful of memory limits here.
+2. Evaluation in training loop.
+3. Add in predictions dataset name option
+4. Reincorporate APEX
+5. Add logging/verbose mode
+6. Update readme to new Click cli
+
+
+## TODONE
+
+- ~~Convert lists to numpy arrays (texts and labels)~~
+- ~~Save other model data (num labels, n epochs, max seq len?, multiclass/multilabel column index dict )~~
+- ~~Save paths are weird... gotta be a better way to pass a dir and model name? Look at what other libraries do.~~
+- ~~Rename loading to IO? Refactor where functions are in modules.~~
+- ~~Return label mapping and allow for custom labels~~
+- ~~Refactor to have only multiclass or multilabel, and take column names?~~
+- ~~Why does data loading take so long (even for small datasets)?~~ / ~~Error in multilabel train with up to line 1000? tokenizer not instantiated?~~
