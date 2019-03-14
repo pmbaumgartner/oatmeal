@@ -39,7 +39,7 @@ if device == "cpu":
     TRAIN_BATCH_SIZE = 16
     MAX_SEQ_LEN = 64
 else:
-    TRAIN_BATCH_SIZE = 8
+    TRAIN_BATCH_SIZE = 32
     MAX_SEQ_LEN = 128
 
 
