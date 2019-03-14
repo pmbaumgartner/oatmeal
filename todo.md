@@ -6,6 +6,7 @@
 3. Add in predictions dataset name option
 4. Reincorporate APEX
 5. Add logging/verbose mode
+6. Update readme to new Click cli
 
 
 ## TODONE
