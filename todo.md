@@ -7,6 +7,7 @@
 4. Reincorporate APEX
 5. Add logging/verbose mode
 6. Update readme to new Click cli
+7. Create "single predict" option for gut check? 
 
 
 ## TODONE

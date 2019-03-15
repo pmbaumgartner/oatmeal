@@ -216,25 +216,48 @@ def predict(input_data, model_path, model_name, batch_size, text_column):
     num_labels = training_parameters["num_labels"]
     max_seq_len = training_parameters["max_seq_len"]
     label_names = training_parameters["label_names"]
-    if problem_type in ("binary", "multiclass"):
-        model = load_model_classification(model_path, model_name, num_labels=num_labels)
-        prediction_loader = create_prediction_dataloader(texts, max_seq_len, batch_size)
-        pred_softmax = run_prediction_softmax(model, prediction_loader)
-        if problem_type == "binary":
-            predictions_df = build_binary_predictions_df(df, pred_softmax)
-            predictions_df.to_csv(model_path + "/preds.csv")
-        elif problem_type == "multiclass":
-            predictions_df = build_multi_predictions_df(df, pred_softmax, label_names)
-            predictions_df.to_csv(model_path + "/preds.csv")
-
+    if problem_type == "multiclass":
+        model_load = load_model_classification
+        run_predictions = run_prediction_softmax
     elif problem_type == "multilabel":
-        model = load_model_multilabel(
-            str(model_path), model_name, num_labels=num_labels
-        )
-        prediction_loader = create_prediction_dataloader(texts, max_seq_len, batch_size)
-        pred_sigmoid = run_prediction_sigmoid(model, prediction_loader)
-        predictions_df = build_multi_predictions_df(df, pred_sigmoid, label_names)
-        predictions_df.to_csv(model_path + "/preds.csv")
+        model_load = load_model_multilabel
+        run_predictions = run_prediction_sigmoid
+    model = model_load(model_path, model_name, num_labels=num_labels)
+    prediction_loader = create_prediction_dataloader(texts, max_seq_len, batch_size)
+    predictions = run_predictions(model, prediction_loader)
+    predictions_df = build_multi_predictions_df(df, predictions, label_names)
+    predictions_df.to_csv(model_path + "/preds.csv")
+
+
+@cli.command("predict-single")
+@click.option("-t", "--input-text", required=True, type=str, nargs=1)
+@click.option(
+    "-p",
+    "--model-path",
+    type=click.Path(exists=False, file_okay=False, dir_okay=True, resolve_path=True),
+    nargs=1,
+)
+@click.option("-n", "--model-name", type=str, nargs=1)
+def predict(input_text, model_path, model_name):
+    training_parameters = load_training_config(
+        str(model_path + f"/{model_name}-training-parameters.json")
+    )
+    problem_type = training_parameters["problem_type"]
+    num_labels = training_parameters["num_labels"]
+    max_seq_len = training_parameters["max_seq_len"]
+    label_names = training_parameters["label_names"]
+    if problem_type == "multiclass":
+        model_load = load_model_classification
+        run_predictions = run_prediction_softmax
+    elif problem_type == "multilabel":
+        model_load = load_model_multilabel
+        run_predictions = run_prediction_sigmoid
+    model = model_load(model_path, model_name, num_labels=num_labels)
+    prediction_loader = create_prediction_dataloader([input_text], max_seq_len, 1)
+    predictions = run_predictions(model, prediction_loader)
+    # TODO: make this a function
+    for label, p in zip(label_names, predictions[0, :].tolist()):
+        print(f"{label}: {p:.2f}")
 
 
 if __name__ == "__main__":

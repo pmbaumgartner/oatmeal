@@ -26,7 +26,7 @@ def save_model(
         now_timestamp = datetime.now().strftime("%y-%m-%dT%H-%M-%S")
         export_path = Path(f"./{now_timestamp}")
     else:
-        export_path = Path(export_path)
+        export_path = Path(export_dir)
 
     export_path.mkdir(parents=True, exist_ok=True)
 
