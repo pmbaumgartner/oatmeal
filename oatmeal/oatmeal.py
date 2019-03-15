@@ -149,9 +149,10 @@ def multiclass(ctx, text_column, label_column, label_names):
 
 @train.command("multilabel")
 @click.option("-x", "--text-column", required=True, type=str)
+@click.option("-b", "--balance", is_flag=True, help="Balance labels")
 @click.argument("label_names", required=True, nargs=-1, type=str)
 @click.pass_obj
-def multilabel(ctx, text_column, label_names):
+def multilabel(ctx, text_column, label_names, balance):
     """Train Multilabel classification
 
     This will use columns passed as the last argument [LABEL_NAMES]
@@ -160,19 +161,31 @@ def multilabel(ctx, text_column, label_names):
     texts, labels = load_multilabel_data(
         ctx["input_data"], text_column=text_column, label_names=list(label_names)
     )
+    if balance:
+        pos_weight = (labels.sum(axis=0) / labels.shape[1]).tolist()
     num_labels = labels.shape[1]
     n_train_examples = len(texts)
     training_dataloader = create_training_dataloader(
         texts, labels, ctx["max_seq_len"], ctx["batch_size"]
     )
+
     bert_model = get_bert_multilabel_model(num_labels=num_labels)
     bert_opt = get_bert_opt(
         bert_model, n_train_examples, ctx["batch_size"], ctx["epochs"]
     )
 
-    trained_model = run_model_training(
-        bert_model, bert_opt, training_dataloader, ctx["epochs"]
-    )
+    if balance:
+        trained_model = run_model_training(
+            bert_model,
+            bert_opt,
+            training_dataloader,
+            ctx["epochs"],
+            pos_weight=pos_weight,
+        )
+    else:
+        trained_model = run_model_training(
+            bert_model, bert_opt, training_dataloader, ctx["epochs"]
+        )
 
     if not ctx["model_name"]:
         ctx["model_name"] = "multilabel"

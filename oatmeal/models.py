@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional, List
 
 import numpy as np
 import torch
@@ -37,6 +37,7 @@ class BertForMultiLabelSequenceClassification(BertPreTrainedModel):  # type: ign
         token_type_ids: Tensor = None,
         attention_mask: Tensor = None,
         labels: Tensor = None,
+        pos_weight: Tensor = None,
     ) -> Tensor:
         _, pooled_output = self.bert(
             input_ids, token_type_ids, attention_mask, output_all_encoded_layers=False
@@ -45,7 +46,9 @@ class BertForMultiLabelSequenceClassification(BertPreTrainedModel):  # type: ign
         logits = self.classifier(pooled_output)
 
         if labels is not None:
-            loss_fct = BCEWithLogitsLoss()
+            if pos_weight is None:
+                pos_weight = Tensor([1] * self.num_labels)
+            loss_fct = BCEWithLogitsLoss(pos_weight=pos_weight)
             loss = loss_fct(
                 logits.view(-1, self.num_labels).float(),
                 labels.view(-1, self.num_labels).float(),
@@ -130,15 +133,24 @@ def get_bert_opt(
 
 
 def run_model_training(
-    model: bert_model_types, opt: BertAdam, dataloader: DataLoader, epochs: int
+    model: bert_model_types,
+    opt: BertAdam,
+    dataloader: DataLoader,
+    epochs: int,
+    pos_weight: Optional[List[float]] = None,
 ) -> bert_model_types:
     model.to(device)
     model.train()
+    if pos_weight:
+        pos_weight = Tensor(pos_weight)
     for _ in trange(epochs, desc="EPOCH"):
         for batch in tqdm(dataloader, desc="ITERATION"):
             batch = tuple(t.to(device) for t in batch)
             x0, x1, x2, y = batch
-            loss = model(x0, x1, x2, y)
+            if pos_weight:
+                loss = model(x0, x1, x2, y, pos_weight)
+            else:
+                loss = model(x0, x1, x2, y)
             if n_gpu > 1:
                 loss = loss.mean()
             loss.backward()
