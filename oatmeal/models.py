@@ -142,13 +142,14 @@ def run_model_training(
     model.to(device)
     model.train()
     if pos_weight:
-        pos_weight = Tensor(pos_weight)
+        pos_weight = Tensor(pos_weight).to(device)
+
     for _ in trange(epochs, desc="EPOCH"):
         for batch in tqdm(dataloader, desc="ITERATION"):
             batch = tuple(t.to(device) for t in batch)
             x0, x1, x2, y = batch
             if pos_weight:
-                loss = model(x0, x1, x2, y, pos_weight)
+                loss = model(x0, x1, x2, y, pos_weight=pos_weight)
             else:
                 loss = model(x0, x1, x2, y)
             if n_gpu > 1:
