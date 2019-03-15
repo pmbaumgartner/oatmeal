@@ -15,6 +15,8 @@ bert_model_types = Union[
     BertForSequenceClassification, BertForMultiLabelSequenceClassification
 ]
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 def save_model(
     model: bert_model_types,
@@ -43,7 +45,9 @@ def load_model_classification(
     model_path = Path(model_path)
     config = BertConfig(str(model_path / f"{model_name}-config.json"))
     model = BertForSequenceClassification(config, num_labels=num_labels)
-    model.load_state_dict(torch.load(str(model_path / f"{model_name}-model.pt")))
+    model.load_state_dict(
+        torch.load(str(model_path / f"{model_name}-model.pt"), map_location=device)
+    )
     return model
 
 
@@ -53,7 +57,9 @@ def load_model_multilabel(
     model_path = Path(model_path)
     config = BertConfig(str(model_path / f"{model_name}-config.json"))
     model = BertForMultiLabelSequenceClassification(config, num_labels=num_labels)
-    model.load_state_dict(torch.load(str(model_path / f"{model_name}-model.pt")))
+    model.load_state_dict(
+        torch.load(str(model_path / f"{model_name}-model.pt"), map_location=device)
+    )
     return model
 
 
