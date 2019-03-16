@@ -35,15 +35,12 @@ PRED_BATCH_SIZE = 64
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
-if device == "cpu":
+if device == torch.device("cpu"):
     TRAIN_BATCH_SIZE = 16
     MAX_SEQ_LEN = 64
 else:
     TRAIN_BATCH_SIZE = 32
     MAX_SEQ_LEN = 128
-
-
-print(TRAIN_BATCH_SIZE, MAX_SEQ_LEN)
 
 
 @click.group()

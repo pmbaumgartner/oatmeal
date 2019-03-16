@@ -47,8 +47,9 @@ class BertForMultiLabelSequenceClassification(BertPreTrainedModel):  # type: ign
 
         if labels is not None:
             if pos_weight is None:
-                pos_weight = Tensor([1] * self.num_labels)
-            loss_fct = BCEWithLogitsLoss(pos_weight=pos_weight)
+                loss_fct = BCEWithLogitsLoss()
+            else:
+                loss_fct = BCEWithLogitsLoss(pos_weight=pos_weight)
             loss = loss_fct(
                 logits.view(-1, self.num_labels).float(),
                 labels.view(-1, self.num_labels).float(),
@@ -141,14 +142,13 @@ def run_model_training(
 ) -> bert_model_types:
     model.to(device)
     model.train()
-    if pos_weight:
+    if pos_weight is not None:
         pos_weight = Tensor(pos_weight).to(device)
-
     for _ in trange(epochs, desc="EPOCH"):
         for batch in tqdm(dataloader, desc="ITERATION"):
             batch = tuple(t.to(device) for t in batch)
             x0, x1, x2, y = batch
-            if pos_weight:
+            if pos_weight is not None:
                 loss = model(x0, x1, x2, y, pos_weight=pos_weight)
             else:
                 loss = model(x0, x1, x2, y)
