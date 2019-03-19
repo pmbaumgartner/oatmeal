@@ -163,7 +163,7 @@ def multilabel(ctx, text_column, label_names, balance):
     num_labels = labels.shape[1]
     n_train_examples = len(texts)
     training_dataloader = create_training_dataloader(
-        texts, labels, ctx["max_seq_len"], ctx["batch_size"]
+        texts, labels, ctx["max_seq_len"], ctx["batch_size"], multilabel=True
     )
 
     bert_model = get_bert_multilabel_model(num_labels=num_labels)

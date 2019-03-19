@@ -51,8 +51,7 @@ class BertForMultiLabelSequenceClassification(BertPreTrainedModel):  # type: ign
             else:
                 loss_fct = BCEWithLogitsLoss(pos_weight=pos_weight)
             loss = loss_fct(
-                logits.view(-1, self.num_labels).float(),
-                labels.view(-1, self.num_labels).float(),
+                logits.view(-1, self.num_labels), labels.view(-1, self.num_labels)
             )
             return loss
         else:

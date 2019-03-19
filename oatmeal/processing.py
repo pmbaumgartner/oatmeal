@@ -47,8 +47,8 @@ def tensorize_texts(
     return all_input_ids, all_input_mask, all_segment_ids
 
 
-def labels_to_tensor(labels: array) -> Tensor:
-    all_label_ids = torch.tensor(labels, dtype=torch.long)
+def labels_to_tensor(labels: array, dtype=torch.long) -> Tensor:
+    all_label_ids = torch.tensor(labels, dtype=dtype)
     return all_label_ids
 
 
@@ -80,10 +80,17 @@ def build_predict_dataloader(
 
 
 def create_training_dataloader(
-    texts: array, labels: array, max_seq_len: int, batch_size: int
+    texts: array,
+    labels: array,
+    max_seq_len: int,
+    batch_size: int,
+    multilabel: bool = False,
 ) -> DataLoader:
     all_input_ids, all_input_mask, all_segment_ids = tensorize_texts(texts, max_seq_len)
-    all_label_ids = labels_to_tensor(labels)
+    if multilabel:
+        all_label_ids = labels_to_tensor(labels, dtype=torch.float)
+    else:
+        all_label_ids = labels_to_tensor(labels)
     dataloader = build_train_dataloader(
         all_input_ids, all_input_mask, all_segment_ids, all_label_ids, batch_size
     )
